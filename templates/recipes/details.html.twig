@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ name | upper}}{% endblock %}
+
+{% block article %}
+    <article style="display: flex; justify-content: center; justify-items: center;">
+        <section>
+            <div style="margin-top: 10vh; background-color: rgba(245, 186, 65, 0.1); width: 86vw; height: 80vh; border-radius: 10px; text-align: center;">
+                <p style="font-size: 48px; padding-top: 25px;">{{ name | upper }}</p>
+                <img src="{{ asset('images/main/recipes/pizza.svg') }}">
+            </div>
+        </section>
+    </article>
+
+{% endblock %}
