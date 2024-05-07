@@ -11,20 +11,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 class RecipeIngredient
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
     #[ORM\Column]
     #[ORM\ManyToOne(targetEntity: Recipe::class)]
     #[ORM\JoinColumn(name: "id_recipe", referencedColumnName: "id")]
     private ?int $id_recipe = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
-    #[Assert\Range(
-        min: 0,
-        max: 100
-    )]
+    #[Assert\GreaterThan(0)]
     private ?int $quantity = null;
 
     #[ORM\Column]
@@ -38,24 +31,12 @@ class RecipeIngredient
     private ?int $id_unit = null;
 
     #[ORM\Column]
-    #[ORM\ManyToOne(Ingredient::class)]
+    #[ORM\ManyToOne(targetEntity: Ingredient::class)]
     #[ORM\JoinColumn(name: "id_ingredient", referencedColumnName: "id")]
     private ?int $id_ingredient = null;
 
-    #[ORM\Column(length: 25)]
+    #[ORM\Column(length: 25, nullable: true)]
     private ?string $note = null;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
-    }
 
     public function getIdRecipe(): ?int
     {

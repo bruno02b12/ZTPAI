@@ -14,7 +14,7 @@ class Ingredient
     private ?int $id = null;
 
     #[ORM\Column(length: 50, unique: true)]
-    private ?string $ingredient = null;
+    private ?string $name = null;
 
     public function getId(): ?int
     {
@@ -28,14 +28,14 @@ class Ingredient
         return $this;
     }
 
-    public function getIngredient(): ?string
+    public function getName(): ?string
     {
-        return $this->ingredient;
+        return $this->name;
     }
 
-    public function setIngredient(string $ingredient): static
+    public function setName(string $name): static
     {
-        $this->ingredient = $ingredient;
+        $this->name = $name;
 
         return $this;
     }

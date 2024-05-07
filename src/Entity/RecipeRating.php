@@ -11,10 +11,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 class RecipeRating
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
-
     #[ORM\Column]
     #[ORM\ManyToOne(targetEntity: Recipe::class)]
     #[ORM\JoinColumn(name: "id_recipe", referencedColumnName: "id")]
@@ -26,16 +22,12 @@ class RecipeRating
         min: 1,
         max: 5
     )]
-    private ?int $rating = null;
+    private ?int $rating = 3;
 
     #[ORM\Column]
     #[Assert\GreaterThan(0)]
     private ?int $no_rating = null;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
     public function getIdRecipe(): ?int
     {

@@ -2,15 +2,18 @@
 
 namespace App\Entity;
 
-use App\Repository\UserRecipeUserActionRepository;
+use App\Repository\UserRecipeRatingRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: UserRecipeUserActionRepository::class)]
+
+#[ORM\Entity(repositoryClass: UserRecipeRatingRepository::class)]
 #[ORM\UniqueConstraint(
-    name: 'id_user_id_recipe_id_user_action',
-    columns: ['id_user', 'id_recipe', 'id_user_action']
+    name: 'id_user_id_recipe',
+    columns: ['id_user', 'id_recipe']
 )]
-class UserRecipeUserAction
+class UserRecipeRating
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -25,12 +28,15 @@ class UserRecipeUserAction
     #[ORM\Column]
     #[ORM\ManyToOne(targetEntity: Recipe::class)]
     #[ORM\JoinColumn(name: "id_recipe", referencedColumnName: "id")]
+
     private ?int $id_recipe = null;
 
-    #[ORM\Column]
-    #[ORM\ManyToOne(targetEntity: UserAction::class)]
-    #[ORM\JoinColumn(name: "id_user_action", referencedColumnName: "id")]
-    private ?int $id_user_action = null;
+    #[ORM\Column(type: Types::SMALLINT)]
+    #[Assert\Range(
+        min: 1,
+        max: 5
+    )]
+    private ?int $rating = null;
 
     public function getId(): ?int
     {
@@ -68,14 +74,14 @@ class UserRecipeUserAction
         return $this;
     }
 
-    public function getIdUserAction(): ?int
+    public function getRating(): ?int
     {
-        return $this->id_user_action;
+        return $this->rating;
     }
 
-    public function setIdUserAction(int $id_user_action): static
+    public function setRating(int $rating): static
     {
-        $this->id_user_action = $id_user_action;
+        $this->rating = $rating;
 
         return $this;
     }

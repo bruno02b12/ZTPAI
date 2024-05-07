@@ -3,19 +3,21 @@
 namespace App\Entity;
 
 use App\Repository\ShoppingListIngredientRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ShoppingListIngredientRepository::class)]
 class ShoppingListIngredient
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
     #[ORM\Column]
     #[ORM\ManyToOne(targetEntity: ShoppingList::class)]
-    #[ORM\JoinColumn(name: "id", referencedColumnName: "id")]
-    private ?int $id = null;
+    #[ORM\JoinColumn(name: "id_shopping_list", referencedColumnName: "id")]
+    private ?int $id_shopping_list = null;
 
     #[ORM\Column]
+    #[Assert\GreaterThan(0)]
     private ?int $quantity = null;
 
     #[ORM\Column]
@@ -36,17 +38,17 @@ class ShoppingListIngredient
     #[ORM\Column(length: 25, nullable: true)]
     private ?string $note = null;
 
-    #[ORM\Column]
-    private ?bool $status = null;
+    #[ORM\Column(type: Types::SMALLINT)]
+    private ?int $status = 0;
 
-    public function getId(): ?int
+    public function getIdShoppingList(): ?int
     {
-        return $this->id;
+        return $this->id_shopping_list;
     }
 
-    public function setId(int $id): static
+    public function setIdShoppingList(int $id_shopping_list): static
     {
-        $this->id = $id;
+        $this->id_shopping_list = $id_shopping_list;
 
         return $this;
     }
@@ -111,12 +113,12 @@ class ShoppingListIngredient
         return $this;
     }
 
-    public function isStatus(): ?bool
+    public function isStatus(): ?int
     {
         return $this->status;
     }
 
-    public function setStatus(bool $status): static
+    public function setStatus(int $status): static
     {
         $this->status = $status;
 

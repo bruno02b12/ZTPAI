@@ -14,7 +14,7 @@ class DietaryType
     private ?int $id = null;
 
     #[ORM\Column(length: 25, unique: true)]
-    private ?string $dietary_type = null;
+    private ?string $name = null;
 
     public function getId(): ?int
     {
@@ -28,14 +28,14 @@ class DietaryType
         return $this;
     }
 
-    public function getDietaryType(): ?string
+    public function getName(): ?string
     {
-        return $this->dietary_type;
+        return $this->name;
     }
 
-    public function setDietaryType(string $dietary_type): static
+    public function setName(string $name): static
     {
-        $this->dietary_type = $dietary_type;
+        $this->name = $name;
 
         return $this;
     }

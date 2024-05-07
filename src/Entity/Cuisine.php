@@ -14,7 +14,7 @@ class Cuisine
     private ?int $id = null;
 
     #[ORM\Column(length: 25, unique: true)]
-    private ?string $cuisine = null;
+    private ?string $name = null;
 
     public function getId(): ?int
     {
@@ -28,14 +28,14 @@ class Cuisine
         return $this;
     }
 
-    public function getCuisine(): ?string
+    public function getName(): ?string
     {
-        return $this->cuisine;
+        return $this->name;
     }
 
-    public function setCuisine(string $cuisine): static
+    public function setName(string $name): static
     {
-        $this->cuisine = $cuisine;
+        $this->name = $name;
 
         return $this;
     }

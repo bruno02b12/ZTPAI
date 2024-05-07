@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -30,8 +31,8 @@ class User
     #[ORM\JoinColumn(name: "id_user_type", referencedColumnName: "id")]
     private ?int $id_user_type = null;
 
-    #[ORM\Column]
-    private ?bool $is_active = null;
+    #[ORM\Column(type: Types::SMALLINT)]
+    private ?int $is_active = 1;
 
     public function getId(): ?int
     {
@@ -105,12 +106,12 @@ class User
         return $this;
     }
 
-    public function isActive(): ?bool
+    public function isActive(): ?int
     {
         return $this->is_active;
     }
 
-    public function setActive(bool $is_active): static
+    public function setActive(int $is_active): static
     {
         $this->is_active = $is_active;
 

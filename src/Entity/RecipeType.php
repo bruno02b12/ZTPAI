@@ -14,7 +14,7 @@ class RecipeType
     private ?int $id = null;
 
     #[ORM\Column(length: 25, unique: true)]
-    private ?string $recipe_type = null;
+    private ?string $name = null;
 
     public function getId(): ?int
     {
@@ -28,14 +28,14 @@ class RecipeType
         return $this;
     }
 
-    public function getRecipeType(): ?string
+    public function getName(): ?string
     {
-        return $this->recipe_type;
+        return $this->name;
     }
 
-    public function setRecipeType(string $recipe_type): static
+    public function setName(string $name): static
     {
-        $this->recipe_type = $recipe_type;
+        $this->name = $name;
 
         return $this;
     }

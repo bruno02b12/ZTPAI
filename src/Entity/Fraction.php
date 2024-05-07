@@ -14,7 +14,7 @@ class Fraction
     private ?int $id = null;
 
     #[ORM\Column(length: 4, unique: true)]
-    private ?string $fraction = null;
+    private ?string $name = null;
 
     public function getId(): ?int
     {
@@ -28,14 +28,14 @@ class Fraction
         return $this;
     }
 
-    public function getFraction(): ?string
+    public function getName(): ?string
     {
-        return $this->fraction;
+        return $this->name;
     }
 
-    public function setFraction(string $fraction): static
+    public function setName(string $name): static
     {
-        $this->fraction = $fraction;
+        $this->name = $name;
 
         return $this;
     }

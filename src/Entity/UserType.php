@@ -14,7 +14,7 @@ class UserType
     private ?int $id = null;
 
     #[ORM\Column(length: 25, unique: true)]
-    private ?string $user_type = null;
+    private ?string $name = null;
 
     public function getId(): ?int
     {
@@ -28,14 +28,14 @@ class UserType
         return $this;
     }
 
-    public function getUserType(): ?string
+    public function getName(): ?string
     {
-        return $this->user_type;
+        return $this->name;
     }
 
-    public function setUserType(string $user_type): static
+    public function setName(string $name): static
     {
-        $this->user_type = $user_type;
+        $this->name = $name;
 
         return $this;
     }

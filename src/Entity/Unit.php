@@ -14,7 +14,7 @@ class Unit
     private ?int $id = null;
 
     #[ORM\Column(length: 25, unique: true)]
-    private ?string $unit = null;
+    private ?string $name = null;
 
     #[ORM\Column(length: 5, unique: true)]
     private ?string $abbr = null;
@@ -31,14 +31,14 @@ class Unit
         return $this;
     }
 
-    public function getUnit(): ?string
+    public function getName(): ?string
     {
-        return $this->unit;
+        return $this->name;
     }
 
-    public function setUnit(string $unit): static
+    public function setName(string $name): static
     {
-        $this->unit = $unit;
+        $this->name = $name;
 
         return $this;
     }

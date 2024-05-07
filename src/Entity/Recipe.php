@@ -29,7 +29,7 @@ class Recipe
     #[ORM\Column(length: 50)]
     private ?string $image = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[ORM\Column(type: Types::SMALLINT)]
     #[Assert\GreaterThan(0)]
     private ?\DateTimeInterface $prep_time = null;
 

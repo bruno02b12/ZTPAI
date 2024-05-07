@@ -15,6 +15,8 @@ class ShoppingList
     private ?int $id = null;
 
     #[ORM\Column]
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: "id_user", referencedColumnName: "id")]
     private ?int $id_user = null;
 
     #[ORM\Column(length: 50)]
@@ -38,12 +40,12 @@ class ShoppingList
         return $this;
     }
 
-    public function getIsUser(): ?int
+    public function getIdUser(): ?int
     {
         return $this->id_user;
     }
 
-    public function setIsUser(int $id_user): static
+    public function setIdUser(int $id_user): static
     {
         $this->id_user = $id_user;
 
