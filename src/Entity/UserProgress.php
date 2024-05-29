@@ -7,6 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserProgressRepository::class)]
+#[ORM\Table(name: 'user_progress')]
 class UserProgress
 {
     #[ORM\Id]
@@ -14,79 +15,74 @@ class UserProgress
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: "id_user", referencedColumnName: "id")]
-    private ?int $id_user = null;
+    private ?User $user = null;
 
-    #[ORM\Column]
     #[ORM\ManyToOne(targetEntity: Recipe::class)]
     #[ORM\JoinColumn(name: "id_recipe", referencedColumnName: "id")]
-    private ?int $id_recipe = null;
+    private ?Recipe $recipe = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $start_time = null;
+    private ?\DateTimeInterface $startTime = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $end_time = null;
+    private ?\DateTimeInterface $endTime = null;
+
+    public function __construct(?User $user, ?Recipe $recipe, ?\DateTimeInterface $startTime, ?\DateTimeInterface $endTime)
+    {
+        $this->user = $user;
+        $this->recipe = $recipe;
+        $this->startTime = $startTime;
+        $this->endTime = $endTime;
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(int $id): static
+    public function getUser(): ?User
     {
-        $this->id = $id;
+        return $this->user;
+    }
 
+    public function setUser(User $user): static
+    {
+        $this->user = $user;
         return $this;
     }
 
-    public function getIdUser(): ?int
+    public function getRecipe(): ?Recipe
     {
-        return $this->id_user;
+        return $this->recipe;
     }
 
-    public function setIdUser(int $id_user): static
+    public function setRecipe(Recipe $recipe): static
     {
-        $this->id_user = $id_user;
-
-        return $this;
-    }
-
-    public function getIdRecipe(): ?int
-    {
-        return $this->id_recipe;
-    }
-
-    public function setIdRecipe(int $id_recipe): static
-    {
-        $this->id_recipe = $id_recipe;
-
+        $this->recipe = $recipe;
         return $this;
     }
 
     public function getStartTime(): ?\DateTimeInterface
     {
-        return $this->start_time;
+        return $this->startTime;
     }
 
-    public function setStartTime(\DateTimeInterface $start_time): static
+    public function setStartTime(\DateTimeInterface $startTime): static
     {
-        $this->start_time = $start_time;
-
+        $this->startTime = $startTime;
         return $this;
     }
 
     public function getEndTime(): ?\DateTimeInterface
     {
-        return $this->end_time;
+        return $this->endTime;
     }
 
-    public function setEndTime(\DateTimeInterface $end_time): static
+    public function setEndTime(\DateTimeInterface $endTime): static
     {
-        $this->end_time = $end_time;
-
+        $this->endTime = $endTime;
         return $this;
     }
 }

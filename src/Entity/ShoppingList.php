@@ -7,6 +7,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ShoppingListRepository::class)]
+#[ORM\Table(name: 'shopping_list')]
 class ShoppingList
 {
     #[ORM\Id]
@@ -14,41 +15,29 @@ class ShoppingList
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: "id_user", referencedColumnName: "id")]
-    private ?int $id_user = null;
+    private ?User $user = null;
 
     #[ORM\Column(length: 50)]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $add_time = null;
-
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $edit_time = null;
+    private ?\DateTimeInterface $addTime = null;
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(int $id): static
+    public function getUser(): ?User
     {
-        $this->id = $id;
-
-        return $this;
+        return $this->user;
     }
 
-    public function getIdUser(): ?int
+    public function setUser(User $user): static
     {
-        return $this->id_user;
-    }
-
-    public function setIdUser(int $id_user): static
-    {
-        $this->id_user = $id_user;
-
+        $this->user = $user;
         return $this;
     }
 
@@ -60,31 +49,17 @@ class ShoppingList
     public function setTitle(string $title): static
     {
         $this->title = $title;
-
         return $this;
     }
 
     public function getAddTime(): ?\DateTimeInterface
     {
-        return $this->add_time;
+        return $this->addTime;
     }
 
-    public function setAddTime(\DateTimeInterface $add_time): static
+    public function setAddTime(\DateTimeInterface $addTime): static
     {
-        $this->add_time = $add_time;
-
-        return $this;
-    }
-
-    public function getEditTime(): ?\DateTimeInterface
-    {
-        return $this->edit_time;
-    }
-
-    public function setEditTime(\DateTimeInterface $edit_time): static
-    {
-        $this->edit_time = $edit_time;
-
+        $this->addTime = $addTime;
         return $this;
     }
 }

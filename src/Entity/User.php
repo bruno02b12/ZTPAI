@@ -2,48 +2,67 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-class User
+#[ORM\Table(name: 'user')]
+#[ApiResource(
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:write']]
+)]
+class User implements UserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 25)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 50)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $surname = null;
 
     #[ORM\Column(length: 255, unique: true)]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['user:write'])]
     private ?string $password = null;
 
-    #[ORM\Column]
     #[ORM\ManyToOne(targetEntity: UserType::class)]
     #[ORM\JoinColumn(name: "id_user_type", referencedColumnName: "id")]
-    private ?int $id_user_type = null;
+    #[Groups(['user:read', 'user:write'])]
+    private ?UserType $userType = null;
 
-    #[ORM\Column(type: Types::SMALLINT)]
-    private ?int $is_active = 1;
+    public function __construct(
+        string $name,
+        string $surname,
+        string $email,
+        string $password,
+        UserType $userType
+    ) {
+        $this->name = $name;
+        $this->surname = $surname;
+        $this->email = $email;
+        $this->password = $password;
+        $this->userType = $userType;
+    }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
     }
 
     public function getName(): ?string
@@ -54,7 +73,6 @@ class User
     public function setName(string $name): static
     {
         $this->name = $name;
-
         return $this;
     }
 
@@ -66,7 +84,6 @@ class User
     public function setSurname(string $surname): static
     {
         $this->surname = $surname;
-
         return $this;
     }
 
@@ -78,7 +95,6 @@ class User
     public function setEmail(string $email): static
     {
         $this->email = $email;
-
         return $this;
     }
 
@@ -90,31 +106,37 @@ class User
     public function setPassword(string $password): static
     {
         $this->password = $password;
-
         return $this;
     }
 
-    public function getIdUserType(): ?int
+    public function getUserType(): ?UserType
     {
-        return $this->id_user_type;
+        return $this->userType;
     }
 
-    public function setIdUserType(int $id_user_type): static
+    public function setUserType(UserType $userType): static
     {
-        $this->id_user_type = $id_user_type;
-
+        $this->userType = $userType;
         return $this;
     }
 
-    public function isActive(): ?int
+    public function getUserTypeName(): ?string
     {
-        return $this->is_active;
+        return $this->userType?->getName();
     }
 
-    public function setActive(int $is_active): static
+    public function getRoles(): array
     {
-        $this->is_active = $is_active;
+        // TODO: Implement getRoles() method.
+    }
 
-        return $this;
+    public function eraseCredentials(): void
+    {
+        // TODO: Implement eraseCredentials() method.
+    }
+
+    public function getUserIdentifier(): string
+    {
+        // TODO: Implement getUserIdentifier() method.
     }
 }

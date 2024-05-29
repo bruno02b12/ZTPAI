@@ -2,12 +2,17 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\RecipeRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: RecipeRepository::class)]
+#[ORM\Table(name: 'recipe')]
+#[ApiResource]
 class Recipe
 {
     #[ORM\Id]
@@ -18,38 +23,35 @@ class Recipe
     #[ORM\Column(length: 50)]
     private ?string $title = null;
 
-    #[ORM\Column]
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: "id_user", referencedColumnName: "id")]
-    private ?int $id_user = null;
+    private ?User $user = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
-    private ?\DateTimeInterface $add_time = null;
+    private ?\DateTimeInterface $addTime = null;
 
     #[ORM\Column(length: 50)]
     private ?string $image = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
     #[Assert\GreaterThan(0)]
-    private ?\DateTimeInterface $prep_time = null;
+    private ?int $prepTime = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
     #[Assert\GreaterThan(0)]
-    private ?int $no_serving = null;
+    private ?int $noServing = null;
 
     #[ORM\Column(type: Types::SMALLINT)]
     #[Assert\GreaterThan(0)]
-    private ?int $no_ingredient = null;
+    private ?int $noIngredient = null;
 
-    #[ORM\Column]
     #[ORM\ManyToOne(targetEntity: RecipeType::class)]
     #[ORM\JoinColumn(name: "id_recipe_type", referencedColumnName: "id")]
-    private ?int $id_recipe_type = null;
+    private ?RecipeType $recipeType = null;
 
-    #[ORM\Column]
     #[ORM\ManyToOne(targetEntity: Cuisine::class)]
     #[ORM\JoinColumn(name: "id_cuisine", referencedColumnName: "id")]
-    private ?int $id_cuisine = null;
+    private ?Cuisine $cuisine = null;
 
     #[ORM\Column(length: 255)]
     private ?string $description = null;
@@ -57,16 +59,39 @@ class Recipe
     #[ORM\Column(length: 2000)]
     private ?string $preparation = null;
 
+    #[ORM\OneToMany(targetEntity: RecipeIngredient::class, mappedBy: 'recipe')]
+    private Collection $ingredients;
+
+    public function __construct(
+        string $title,
+        User $user,
+        \DateTimeInterface $addTime,
+        string $image,
+        int $prepTime,
+        int $noServing,
+        int $noIngredient,
+        RecipeType $recipeType,
+        Cuisine $cuisine,
+        string $description,
+        string $preparation
+    ) {
+        $this->title = $title;
+        $this->user = $user;
+        $this->addTime = $addTime;
+        $this->image = $image;
+        $this->prepTime = $prepTime;
+        $this->noServing = $noServing;
+        $this->noIngredient = $noIngredient;
+        $this->recipeType = $recipeType;
+        $this->cuisine = $cuisine;
+        $this->description = $description;
+        $this->preparation = $preparation;
+        $this->ingredients = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
     }
 
     public function getTitle(): ?string
@@ -77,31 +102,28 @@ class Recipe
     public function setTitle(string $title): static
     {
         $this->title = $title;
-
         return $this;
     }
 
-    public function getIdUser(): ?int
+    public function getUser(): ?User
     {
-        return $this->id_user;
+        return $this->user;
     }
 
-    public function setIdUser(int $id_user): static
+    public function setUser(User $user): static
     {
-        $this->id_user = $id_user;
-
+        $this->user = $user;
         return $this;
     }
 
     public function getAddTime(): ?\DateTimeInterface
     {
-        return $this->add_time;
+        return $this->addTime;
     }
 
-    public function setAddTime(\DateTimeInterface $add_time): static
+    public function setAddTime(\DateTimeInterface $addTime): static
     {
-        $this->add_time = $add_time;
-
+        $this->addTime = $addTime;
         return $this;
     }
 
@@ -113,67 +135,61 @@ class Recipe
     public function setImage(string $image): static
     {
         $this->image = $image;
-
         return $this;
     }
 
-    public function getPrepTime(): ?\DateTimeInterface
+    public function getPrepTime(): ?int
     {
-        return $this->prep_time;
+        return $this->prepTime;
     }
 
-    public function setPrepTime(\DateTimeInterface $prep_time): static
+    public function setPrepTime(int $prepTime): static
     {
-        $this->prep_time = $prep_time;
-
+        $this->prepTime = $prepTime;
         return $this;
     }
 
     public function getNoServing(): ?int
     {
-        return $this->no_serving;
+        return $this->noServing;
     }
 
-    public function setNoServing(int $no_serving): static
+    public function setNoServing(int $noServing): static
     {
-        $this->no_serving = $no_serving;
-
+        $this->noServing = $noServing;
         return $this;
     }
 
     public function getNoIngredient(): ?int
     {
-        return $this->no_ingredient;
+        return $this->noIngredient;
     }
 
-    public function setNoIngredient(int $no_ingredient): static
+    public function setNoIngredient(int $noIngredient): static
     {
-        $this->no_ingredient = $no_ingredient;
-
+        $this->noIngredient = $noIngredient;
         return $this;
     }
 
-    public function getIdRecipeType(): ?int
+    public function getRecipeType(): ?RecipeType
     {
-        return $this->id_recipe_type;
+        return $this->recipeType;
     }
 
-    public function setIdRecipeType(int $id_recipe_type): static
+    public function setRecipeType(RecipeType $recipeType): static
     {
-        $this->id_recipe_type = $id_recipe_type;
-
+        $this->recipeType = $recipeType;
         return $this;
     }
 
-    public function getIdCuisine(): ?int
+    public function getCuisine(): ?Cuisine
     {
-        return $this->id_cuisine;
+        return $this->cuisine;
     }
 
-    public function setIdCuisine(int $id_cuisine): static
+    public function setCuisine(Cuisine $cuisine): static
     {
-        $this->id_cuisine = $id_cuisine;
-
+        $this->cuisine = $cuisine;
         return $this;
     }
 
@@ -185,7 +201,6 @@ class Recipe
     public function setDescription(string $description): static
     {
         $this->description = $description;
-
         return $this;
     }
 
@@ -197,6 +212,31 @@ class Recipe
     public function setPreparation(string $preparation): static
     {
         $this->preparation = $preparation;
+        return $this;
+    }
+
+    public function getIngredients(): Collection
+    {
+        return $this->ingredients;
+    }
+
+    public function addIngredient(RecipeIngredient $ingredient): self
+    {
+        if (!$this->ingredients->contains($ingredient)) {
+            $this->ingredients[] = $ingredient;
+            $ingredient->setRecipe($this);
+        }
+
+        return $this;
+    }
+
+    public function removeIngredient(RecipeIngredient $ingredient): self
+    {
+        if ($this->ingredients->removeElement($ingredient)) {
+            if ($ingredient->getRecipe() === $this) {
+                $ingredient->setRecipe(null);
+            }
+        }
 
         return $this;
     }

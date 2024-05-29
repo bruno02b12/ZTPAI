@@ -8,48 +8,60 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ShoppingListIngredientRepository::class)]
+#[ORM\Table(name: 'shopping_list_ingredient')]
 class ShoppingListIngredient
 {
     #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column]
+    private ?int $id = null;
+
     #[ORM\ManyToOne(targetEntity: ShoppingList::class)]
     #[ORM\JoinColumn(name: "id_shopping_list", referencedColumnName: "id")]
-    private ?int $id_shopping_list = null;
+    private ?ShoppingList $shoppingList = null;
 
     #[ORM\Column]
     #[Assert\GreaterThan(0)]
     private ?int $quantity = null;
 
-    #[ORM\Column]
     #[ORM\ManyToOne(targetEntity: Fraction::class)]
     #[ORM\JoinColumn(name: "id_fraction", referencedColumnName: "id")]
-    private ?int $id_fraction = null;
+    private ?Fraction $fraction = null;
 
-    #[ORM\Column]
     #[ORM\ManyToOne(targetEntity: Unit::class)]
     #[ORM\JoinColumn(name: "id_unit", referencedColumnName: "id")]
-    private ?int $id_unit = null;
+    private ?Unit $unit = null;
 
-    #[ORM\Column]
     #[ORM\ManyToOne(targetEntity: Ingredient::class)]
     #[ORM\JoinColumn(name: "id_ingredient", referencedColumnName: "id")]
-    private ?int $id_ingredient = null;
+    private ?Ingredient $ingredient = null;
 
     #[ORM\Column(length: 25, nullable: true)]
     private ?string $note = null;
 
-    #[ORM\Column(type: Types::SMALLINT)]
-    private ?int $status = 0;
-
-    public function getIdShoppingList(): ?int
+    public function __construct(?ShoppingList $shoppingList, ?int $quantity, ?Fraction $fraction, ?Unit $unit, ?Ingredient $ingredient, ?string $note)
     {
-        return $this->id_shopping_list;
+        $this->shoppingList = $shoppingList;
+        $this->quantity = $quantity;
+        $this->fraction = $fraction;
+        $this->unit = $unit;
+        $this->ingredient = $ingredient;
+        $this->note = $note;
     }
 
-    public function setIdShoppingList(int $id_shopping_list): static
+    public function getId(): ?int
     {
-        $this->id_shopping_list = $id_shopping_list;
+        return $this->id;
+    }
 
+    public function getShoppingList(): ?ShoppingList
+    {
+        return $this->shoppingList;
+    }
+
+    public function setShoppingList(ShoppingList $shoppingList): static
+    {
+        $this->shoppingList = $shoppingList;
         return $this;
     }
 
@@ -61,43 +73,39 @@ class ShoppingListIngredient
     public function setQuantity(int $quantity): static
     {
         $this->quantity = $quantity;
-
         return $this;
     }
 
-    public function getIdFraction(): ?int
+    public function getFraction(): ?Fraction
     {
-        return $this->id_fraction;
+        return $this->fraction;
     }
 
-    public function setIdFraction(int $id_fraction): static
+    public function setFraction(Fraction $fraction): static
     {
-        $this->id_fraction = $id_fraction;
-
+        $this->fraction = $fraction;
         return $this;
     }
 
-    public function getIdUnit(): ?int
+    public function getUnit(): ?Unit
     {
-        return $this->id_unit;
+        return $this->unit;
     }
 
-    public function setIdUnit(int $id_unit): static
+    public function setUnit(Unit $unit): static
     {
-        $this->id_unit = $id_unit;
-
+        $this->unit = $unit;
         return $this;
     }
 
-    public function getIdIngredient(): ?int
+    public function getIngredient(): ?Ingredient
     {
-        return $this->id_ingredient;
+        return $this->ingredient;
     }
 
-    public function setIdIngredient(int $id_ingredient): static
+    public function setIngredient(Ingredient $ingredient): static
     {
-        $this->id_ingredient = $id_ingredient;
-
+        $this->ingredient = $ingredient;
         return $this;
     }
 
@@ -109,19 +117,6 @@ class ShoppingListIngredient
     public function setNote(?string $note): static
     {
         $this->note = $note;
-
-        return $this;
-    }
-
-    public function isStatus(): ?int
-    {
-        return $this->status;
-    }
-
-    public function setStatus(int $status): static
-    {
-        $this->status = $status;
-
         return $this;
     }
 }

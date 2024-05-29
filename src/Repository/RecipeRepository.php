@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\DTO\RecipeSummary;
 use App\Entity\Recipe;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -19,6 +20,50 @@ class RecipeRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Recipe::class);
+    }
+
+    public function findRecipeSummaries(): array
+    {
+        $results = $this->createQueryBuilder('r')
+            ->select('r.id, r.title, r.image')
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_map(function ($row) {
+            return new RecipeSummary($row['id'], $row['title'], $row['image']);
+        }, $results);
+    }
+
+    public function findUserEmailByRecipeId(int $id): ?string
+    {
+        $result = $this->createQueryBuilder('r')
+            ->select('u.email')
+            ->innerJoin('r.user', 'u')
+            ->andWhere('r.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return $result ? $result : null;
+    }
+
+    public function findRecipeDetails(int $id): ?Recipe
+    {
+        $qb = $this->createQueryBuilder('r')
+            ->leftJoin('r.recipeType', 'rt')
+            ->leftJoin('r.cuisine', 'c')
+            ->addSelect('rt', 'c')
+            ->where('r.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery();
+
+        $recipe = $qb->getOneOrNullResult();
+
+        if (!$recipe) {
+            return null;
+        }
+
+        return $recipe;
     }
 
     //    /**

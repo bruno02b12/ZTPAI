@@ -13,6 +13,11 @@ class SecurityController extends AbstractController
     {
         return $this->render('security/login.html.twig');
     }
+    #[Route('/login-email', name: 'app_login-email')]
+    public function loginEmail(): Response
+    {
+        return $this->render('security/login_email.html.twig');
+    }
 
     #[Route('/logout', name: 'app_logout')]
     public function logout(): Response
@@ -24,5 +29,10 @@ class SecurityController extends AbstractController
     public function register(): Response
     {
         return $this->render('security/register.html.twig');
+    }
+    #[Route('/register-email', name: 'app_register-email')]
+    public function registerEmail(): Response
+    {
+        return $this->render('security/register_email.html.twig');
     }
 }

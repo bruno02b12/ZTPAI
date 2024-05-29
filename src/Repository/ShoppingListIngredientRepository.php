@@ -21,6 +21,20 @@ class ShoppingListIngredientRepository extends ServiceEntityRepository
         parent::__construct($registry, ShoppingListIngredient::class);
     }
 
+    public function findListIngredients(int $listId): array
+    {
+        $qb = $this->createQueryBuilder('sli')
+            ->select('sli.quantity, f.name AS fraction, u.abbr AS unit, i.name AS ingredient, sli.note')
+            ->innerJoin('sli.fraction', 'f')
+            ->innerJoin('sli.unit', 'u')
+            ->innerJoin('sli.ingredient', 'i')
+            ->where('sli.shoppingList = :listId')
+            ->setParameter('listId', $listId)
+            ->getQuery();
+
+        return $qb->getArrayResult();
+    }
+
     //    /**
     //     * @return ShoppingListIngredient[] Returns an array of ShoppingListIngredient objects
     //     */

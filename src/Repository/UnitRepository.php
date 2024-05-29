@@ -21,6 +21,15 @@ class UnitRepository extends ServiceEntityRepository
         parent::__construct($registry, Unit::class);
     }
 
+    public function findByNameOrAbbr(string $identifier): ?Unit
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.name = :identifier OR u.abbr = :identifier')
+            ->setParameter('identifier', $identifier)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     //    /**
     //     * @return Unit[] Returns an array of Unit objects
     //     */

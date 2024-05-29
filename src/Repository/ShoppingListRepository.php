@@ -21,6 +21,17 @@ class ShoppingListRepository extends ServiceEntityRepository
         parent::__construct($registry, ShoppingList::class);
     }
 
+    public function findListsbyUserId(int $userId): array
+    {
+        $qb = $this->createQueryBuilder('r')
+            ->select('r.id, r.title, r.addTime')
+            ->where('r.user = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery();
+
+        return $qb->getArrayResult();
+    }
+
     //    /**
     //     * @return ShoppingList[] Returns an array of ShoppingList objects
     //     */

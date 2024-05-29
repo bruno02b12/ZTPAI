@@ -21,6 +21,82 @@ class UserProgressRepository extends ServiceEntityRepository
         parent::__construct($registry, UserProgress::class);
     }
 
+    public function findByUserId(int $userId): array
+    {
+        $qb = $this->createQueryBuilder('up')
+            ->select('up.id, r.id as id, r.title as recipeName, r.image, up.startTime, up.endTime')
+            ->innerJoin('up.recipe', 'r')
+            ->where('up.user = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery();
+
+        return $qb->getArrayResult();
+    }
+
+    public function countAllRecipesByUser(int $userId): int
+    {
+        return $this->createQueryBuilder('up')
+            ->select('COUNT(up.id)')
+            ->where('up.user = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function countUniqueRecipesByUser(int $userId): int
+    {
+        return $this->createQueryBuilder('up')
+            ->select('COUNT(DISTINCT up.recipe)')
+            ->where('up.user = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    public function findTop5FavoriteRecipesByUser(int $userId): array
+    {
+        return $this->createQueryBuilder('up')
+            ->select('r.id, r.title, COUNT(up.id) as occurrences')
+            ->innerJoin('up.recipe', 'r')
+            ->where('up.user = :userId')
+            ->setParameter('userId', $userId)
+            ->groupBy('r.id')
+            ->orderBy('occurrences', 'DESC')
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function findTop5FavoriteRecipeTypesByUser(int $userId): array
+    {
+        return $this->createQueryBuilder('up')
+            ->select('rt.id, rt.name, COUNT(up.id) as occurrences')
+            ->innerJoin('up.recipe', 'r')
+            ->innerJoin('r.recipeType', 'rt')
+            ->where('up.user = :userId')
+            ->setParameter('userId', $userId)
+            ->groupBy('rt.id')
+            ->orderBy('occurrences', 'DESC')
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function findTop5FavoriteCuisinesByUser(int $userId): array
+    {
+        return $this->createQueryBuilder('up')
+            ->select('c.id, c.name, COUNT(up.id) as occurrences')
+            ->innerJoin('up.recipe', 'r')
+            ->innerJoin('r.cuisine', 'c')
+            ->where('up.user = :userId')
+            ->setParameter('userId', $userId)
+            ->groupBy('c.id')
+            ->orderBy('occurrences', 'DESC')
+            ->setMaxResults(5)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
     //    /**
     //     * @return UserProgress[] Returns an array of UserProgress objects
     //     */

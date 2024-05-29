@@ -21,6 +21,21 @@ class RecipeIngredientRepository extends ServiceEntityRepository
         parent::__construct($registry, RecipeIngredient::class);
     }
 
+    public function findRecipeIngredients(int $id) {
+        $ingredients = $this->createQueryBuilder('ri')
+            ->select('ri.quantity, f.name as fraction, u.abbr as unit, i.name as ingredient, ri.note')
+            ->innerJoin('ri.recipe', 'r')
+            ->innerJoin('ri.fraction', 'f')
+            ->innerJoin('ri.unit', 'u')
+            ->innerJoin('ri.ingredient', 'i')
+            ->andWhere('r.id = :id')
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getResult();
+
+        return $ingredients;
+    }
+
     //    /**
     //     * @return RecipeIngredient[] Returns an array of RecipeIngredient objects
     //     */

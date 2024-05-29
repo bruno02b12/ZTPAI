@@ -6,6 +6,7 @@ use App\Repository\UserRecipeUserActionRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserRecipeUserActionRepository::class)]
+#[ORM\Table(name: 'user_recipe_user_action')]
 #[ORM\UniqueConstraint(
     name: 'id_user_id_recipe_id_user_action',
     columns: ['id_user', 'id_recipe', 'id_user_action']
@@ -17,66 +18,60 @@ class UserRecipeUserAction
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
     #[ORM\ManyToOne(targetEntity: User::class)]
     #[ORM\JoinColumn(name: "id_user", referencedColumnName: "id")]
-    private ?int $id_user = null;
+    private ?User $user = null;
 
-    #[ORM\Column]
     #[ORM\ManyToOne(targetEntity: Recipe::class)]
     #[ORM\JoinColumn(name: "id_recipe", referencedColumnName: "id")]
-    private ?int $id_recipe = null;
+    private ?Recipe $recipe = null;
 
-    #[ORM\Column]
     #[ORM\ManyToOne(targetEntity: UserAction::class)]
     #[ORM\JoinColumn(name: "id_user_action", referencedColumnName: "id")]
-    private ?int $id_user_action = null;
+    private ?UserAction $userAction = null;
+
+    public function __construct(?User $user, ?Recipe $recipe, ?UserAction $userAction)
+    {
+        $this->user = $user;
+        $this->recipe = $recipe;
+        $this->userAction = $userAction;
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function setId(int $id): static
+    public function getUser(): ?User
     {
-        $this->id = $id;
+        return $this->user;
+    }
 
+    public function setUser(User $user): static
+    {
+        $this->user = $user;
         return $this;
     }
 
-    public function getIdUser(): ?int
+    public function getRecipe(): ?Recipe
     {
-        return $this->id_user;
+        return $this->recipe;
     }
 
-    public function setIdUser(int $id_user): static
+    public function setRecipe(Recipe $recipe): static
     {
-        $this->id_user = $id_user;
-
+        $this->recipe = $recipe;
         return $this;
     }
 
-    public function getIdRecipe(): ?int
+    public function getUserAction(): ?UserAction
     {
-        return $this->id_recipe;
+        return $this->userAction;
     }
 
-    public function setIdRecipe(int $id_recipe): static
+    public function setUserAction(UserAction $userAction): static
     {
-        $this->id_recipe = $id_recipe;
-
-        return $this;
-    }
-
-    public function getIdUserAction(): ?int
-    {
-        return $this->id_user_action;
-    }
-
-    public function setIdUserAction(int $id_user_action): static
-    {
-        $this->id_user_action = $id_user_action;
-
+        $this->userAction = $userAction;
         return $this;
     }
 }

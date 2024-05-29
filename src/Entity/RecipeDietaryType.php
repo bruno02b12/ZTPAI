@@ -6,6 +6,7 @@ use App\Repository\RecipeDietaryTypeRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: RecipeDietaryTypeRepository::class)]
+#[ORM\Table(name: 'recipe_dietary_type')]
 #[ORM\UniqueConstraint(
     name: 'id_recipe_id_dietary_type',
     columns: ['id_recipe', 'id_dietary_type']
@@ -13,37 +14,48 @@ use Doctrine\ORM\Mapping as ORM;
 class RecipeDietaryType
 {
     #[ORM\Id]
+    #[ORM\GeneratedValue]
     #[ORM\Column]
+    private ?int $id = null;
+
     #[ORM\ManyToOne(targetEntity: Recipe::class)]
     #[ORM\JoinColumn(name: "id_recipe", referencedColumnName: "id")]
-    private ?int $id_recipe = null;
+    private ?Recipe $recipe = null;
 
-    #[ORM\Column]
     #[ORM\ManyToOne(targetEntity: DietaryType::class)]
     #[ORM\JoinColumn(name: "id_dietary_type", referencedColumnName: "id")]
-    private ?int $id_dietary_type = null;
+    private ?DietaryType $dietaryType = null;
 
-    public function getIdRecipe(): ?int
+    public function __construct(?Recipe $recipe, ?DietaryType $dietaryType)
     {
-        return $this->id_recipe;
+        $this->recipe = $recipe;
+        $this->dietaryType = $dietaryType;
     }
 
-    public function setIdRecipe(int $id_recipe): static
+    public function getId(): ?int
     {
-        $this->id_recipe = $id_recipe;
+        return $this->id;
+    }
 
+    public function getRecipe(): ?Recipe
+    {
+        return $this->recipe;
+    }
+
+    public function setRecipe(Recipe $recipe): static
+    {
+        $this->recipe = $recipe;
         return $this;
     }
 
-    public function getIdDietaryType(): ?int
+    public function getDietaryType(): ?DietaryType
     {
-        return $this->id_dietary_type;
+        return $this->dietaryType;
     }
 
-    public function setIdDietaryType(int $id_dietary_type): static
+    public function setDietaryType(DietaryType $dietaryType): static
     {
-        $this->id_dietary_type = $id_dietary_type;
-
+        $this->dietaryType = $dietaryType;
         return $this;
     }
 }

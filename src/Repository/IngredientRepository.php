@@ -21,6 +21,15 @@ class IngredientRepository extends ServiceEntityRepository
         parent::__construct($registry, Ingredient::class);
     }
 
+    public function findByName(string $name): ?Ingredient
+    {
+        return $this->createQueryBuilder('i')
+            ->andWhere('i.name = :name')
+            ->setParameter('name', $name)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     //    /**
     //     * @return Ingredient[] Returns an array of Ingredient objects
     //     */

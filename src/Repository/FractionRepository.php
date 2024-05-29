@@ -21,6 +21,15 @@ class FractionRepository extends ServiceEntityRepository
         parent::__construct($registry, Fraction::class);
     }
 
+    public function findByName(string $name): ?Fraction
+    {
+        return $this->createQueryBuilder('f')
+            ->andWhere('f.name = :name')
+            ->setParameter('name', $name)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     //    /**
     //     * @return Fraction[] Returns an array of Fraction objects
     //     */
