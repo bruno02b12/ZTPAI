@@ -2,11 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Entity\UserProgress;
-use App\Repository\FractionRepository;
-use App\Repository\IngredientRepository;
 use App\Repository\RecipeRepository;
-use App\Repository\UnitRepository;
 use App\Repository\UserProgressRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,11 +20,16 @@ class ProgressController extends AbstractController
     #[Route('/cooking', name: 'app_cooking')]
     public function cooking(UserProgressRepository $userProgressRepository): Response
     {
-        $id = 1;
+//        $userId = 1;
 
-        $progresses = $userProgressRepository->findByUserId($id);
+        //CHANGE_USER
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return new Response('User not found', Response::HTTP_UNAUTHORIZED);
+        }
+        $userId = $user->getId();
 
-//        dd($progresses);
+        $progresses = $userProgressRepository->findByUserId($userId);
 
         return $this->render('progress/cooking.html.twig', [
             'progresses' => $progresses,
@@ -36,15 +39,20 @@ class ProgressController extends AbstractController
     #[Route('/stats', name: 'app_stats')]
     public function stats(UserProgressRepository $userProgressRepository): Response
     {
-        $id = 1;
+//        $userId = 1;
 
-        $totalRecipes = $userProgressRepository->countAllRecipesByUser($id);
-        $uniqueRecipes = $userProgressRepository->countUniqueRecipesByUser($id);
-        $favoriteRecipes = $userProgressRepository->findTop5FavoriteRecipesByUser($id);
-        $favoriteRecipeTypes = $userProgressRepository->findTop5FavoriteRecipeTypesByUser($id);
-        $favoriteCuisines = $userProgressRepository->findTop5FavoriteCuisinesByUser($id);
+        //CHANGE_USER
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return new Response('User not found', Response::HTTP_UNAUTHORIZED);
+        }
+        $userId = $user->getId();
 
-//        dd($totalRecipes, $uniqueRecipes, $favoriteRecipes, $favoriteRecipeTypes, $favoriteCuisines);
+        $totalRecipes = $userProgressRepository->countAllRecipesByUser($userId);
+        $uniqueRecipes = $userProgressRepository->countUniqueRecipesByUser($userId);
+        $favoriteRecipes = $userProgressRepository->findTop5FavoriteRecipesByUser($userId);
+        $favoriteRecipeTypes = $userProgressRepository->findTop5FavoriteRecipeTypesByUser($userId);
+        $favoriteCuisines = $userProgressRepository->findTop5FavoriteCuisinesByUser($userId);
 
         return $this->render('progress/stats.html.twig', [
             'totalRecipes' => $totalRecipes,
@@ -57,7 +65,7 @@ class ProgressController extends AbstractController
 
     #[Route('/cooking/add_cooking', name: 'app_log_add', methods: ['POST'])]
     public function addLog(Request $request, EntityManagerInterface $entityManager, UserRepository $userRepository,
-                           RecipeRepository $recipeRepository, LoggerInterface $logger): JsonResponse
+                           RecipeRepository $recipeRepository): Response
     {
         $data = json_decode($request->getContent(), true);
 
@@ -65,7 +73,17 @@ class ProgressController extends AbstractController
             return new JsonResponse(['status' => 'error', 'message' => 'Invalid JSON: ' . json_last_error_msg()], 400);
         }
 
-        $userId = $data['id_user'] ?? null;
+//        $userId = $data['id_user'] ?? null;
+//        $user = $entityManager->getRepository(User::class)->find(1);
+//        $userId = $user->getId();
+
+        //CHANGE_USER
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return new Response('User not found', Response::HTTP_UNAUTHORIZED);
+        }
+        $userId = $user->getId();
+
         $name = $data['name'] ?? null;
         $recipeId = $data['recipe_id'] ?? null;
         $startDate = $data['start_date'] ?? null;

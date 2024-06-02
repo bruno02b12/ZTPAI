@@ -30,6 +30,14 @@ class FractionRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    public function findAllSortedByName()
+    {
+        return $this->createQueryBuilder('u')
+            ->orderBy('u.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Fraction[] Returns an array of Fraction objects
     //     */

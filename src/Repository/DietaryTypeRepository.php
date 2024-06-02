@@ -21,6 +21,14 @@ class DietaryTypeRepository extends ServiceEntityRepository
         parent::__construct($registry, DietaryType::class);
     }
 
+    public function findAllSortedByName()
+    {
+        return $this->createQueryBuilder('u')
+            ->orderBy('u.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return DietaryType[] Returns an array of DietaryType objects
     //     */

@@ -8,8 +8,9 @@ use App\Entity\Recipe;
 use App\Entity\RecipeDietaryType;
 use App\Entity\RecipeIngredient;
 use App\Entity\RecipeType;
-use App\Entity\ShoppingList;
-use App\Entity\ShoppingListIngredient;
+use App\Entity\User;
+use App\Entity\UserAction;
+use App\Entity\UserRecipeUserAction;
 use App\Repository\CuisineRepository;
 use App\Repository\DietaryTypeRepository;
 use App\Repository\FractionRepository;
@@ -50,6 +51,7 @@ class RecipeController extends AbstractController
         $recipeTypes = $recipeTypeRepository->findAll();
 
         $recipes = $recipeRepository->findRecipeSummaries();
+
         return $this->render('recipes/recipes.html.twig', [
             'recipes' => $recipes,
             'cuisines' => $cuisines,
@@ -59,9 +61,17 @@ class RecipeController extends AbstractController
     }
 
     #[Route('/recipe/{id}', name: 'app_recipe_details', requirements: ['id' => '\d+'])]
-    public function details(int $id, RecipeRepository $recipeRepository, RecipeIngredientRepository $ri, RecipeDietaryTypeRepository $rd): Response
+    public function details(int $id, RecipeRepository $recipeRepository, RecipeIngredientRepository $ri, RecipeDietaryTypeRepository $rd, EntityManagerInterface $entityManager): Response
     {
-        $user = $recipeRepository->findUserEmailByRecipeId($id);
+        //CHANGE_USER
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return new Response('User not found', Response::HTTP_UNAUTHORIZED);
+        }
+        $userId = $user->getId();
+//        $user = $entityManager->getRepository(User::class)->find(1);
+
+        $userEmail = $recipeRepository->findUserEmailByRecipeId($id);
 
         $dietaryTypes = $rd->findRecipeDietaryTypes($id);
 
@@ -73,11 +83,32 @@ class RecipeController extends AbstractController
             throw $this->createNotFoundException('Recipe not found');
         }
 
+        $userActions = [
+            'bookmark' => false,
+            'like' => false
+        ];
+
+        if ($user) {
+            $actions = $entityManager->getRepository(UserRecipeUserAction::class)
+                ->findBy(['user' => $user, 'recipe' => $recipe]);
+
+            foreach ($actions as $action) {
+                $actionType = $action->getUserAction()->getUserAction();
+                if ($actionType === 'favorite') {
+                    $userActions['bookmark'] = true;
+                }
+                if ($actionType === 'liked') {
+                    $userActions['like'] = true;
+                }
+            }
+        }
+
         return $this->render('recipes/recipe.html.twig', [
-            'user' => $user,
+            'userEmail' => $userEmail,
             'dietaryTypes' => $dietaryTypes,
             'ingredients' => $ingredients,
-            'recipe' => $recipe
+            'recipe' => $recipe,
+            'userActions' => $userActions
         ]);
     }
 
@@ -86,7 +117,7 @@ class RecipeController extends AbstractController
                               UserRepository        $userRepository, FractionRepository $fractionRepository,
                               UnitRepository        $unitRepository, IngredientRepository $ingredientRepository,
                               DietaryTypeRepository $dietaryTypeRepository, SluggerInterface $slugger,
-    RecipeTypeRepository $recipeTypeRepository, CuisineRepository $cuisineRepository, LoggerInterface $logger): Response
+    RecipeTypeRepository $recipeTypeRepository, CuisineRepository $cuisineRepository): Response
     {
         $data = $request->request->all();
         $file = $request->files->get('file');
@@ -118,7 +149,18 @@ class RecipeController extends AbstractController
             return new JsonResponse(['status' => 'error', 'message' => 'File is invalid'], 400);
         }
 
-        $userId = $data['id_user'] ?? null;
+//        $userId = $data['id_user'] ?? null;
+
+        //CHANGE_USER
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return new Response('User not found', Response::HTTP_UNAUTHORIZED);
+        }
+        $userId = $user->getId();
+
+//        $user = $entityManager->getRepository(User::class)->find(1);
+//        $userId = $user->getId();
+
         $title = $data['name'] ?? null;
         $prepTime = $data['prep_time'] ?? null;
         $noServings = $data['no_servings'] ?? null;
@@ -129,13 +171,11 @@ class RecipeController extends AbstractController
 
         $ingredientsData = json_decode($data['ingredients'], true);
         if ($ingredientsData === null && json_last_error() !== JSON_ERROR_NONE) {
-            $logger->error('Invalid JSON for ingredients: ' . json_last_error_msg());
             return new JsonResponse(['status' => 'error', 'message' => 'Invalid JSON for ingredients'], 400);
         }
 
         $dietData = json_decode($data['diet'], true);
         if ($dietData === null && json_last_error() !== JSON_ERROR_NONE) {
-            $logger->error('Invalid JSON for diet: ' . json_last_error_msg());
             return new JsonResponse(['status' => 'error', 'message' => 'Invalid JSON for diet'], 400);
         }
 
@@ -219,5 +259,47 @@ class RecipeController extends AbstractController
             'controller_name' => 'RecipesController',
             'action' => 'filter'
         ]);
+    }
+
+    #[Route('/recipe/toggle-action/{action}', name: 'toggle_action', methods: ['POST'])]
+    public function toggleAction(Request $request, EntityManagerInterface $entityManager, string $action): Response
+    {
+        $data = json_decode($request->getContent(), true);
+        $recipeId = $data['recipeId'];
+
+        //CHANGE_USER
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return new Response('User not found', Response::HTTP_UNAUTHORIZED);
+        }
+        $userId = $user->getId();
+//        $user = $entityManager->getRepository(User::class)->find(1);
+//        $userId = $user->getId();
+
+        $recipe = $entityManager->getRepository(Recipe::class)->find($recipeId);
+        if (!$recipe) {
+            return new JsonResponse(['success' => false, 'message' => 'Invalid recipe ID provided.'], 400);
+        }
+
+        $userAction = $entityManager->getRepository(UserAction::class)->findOneBy(['userAction' => $action]);
+        if (!$userAction) {
+            return new JsonResponse(['success' => false, 'message' => 'Invalid action provided.'], 400);
+        }
+
+        $userRecipeAction = $entityManager->getRepository(UserRecipeUserAction::class)
+            ->findOneBy(['user' => $user, 'recipe' => $recipe, 'userAction' => $userAction]);
+
+        if ($userRecipeAction) {
+            $entityManager->remove($userRecipeAction);
+            $entityManager->flush();
+            $status = 'unfilled';
+        } else {
+            $newAction = new UserRecipeUserAction($user, $recipe, $userAction);
+            $entityManager->persist($newAction);
+            $entityManager->flush();
+            $status = 'filled';
+        }
+
+        return new JsonResponse(['success' => true, 'status' => $status]);
     }
 }

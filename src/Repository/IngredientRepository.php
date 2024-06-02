@@ -30,6 +30,14 @@ class IngredientRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    public function findAllSortedByName()
+    {
+        return $this->createQueryBuilder('u')
+            ->orderBy('u.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Ingredient[] Returns an array of Ingredient objects
     //     */

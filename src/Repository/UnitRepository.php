@@ -30,6 +30,14 @@ class UnitRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
+    public function findAllSortedByName()
+    {
+        return $this->createQueryBuilder('u')
+            ->orderBy('u.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Unit[] Returns an array of Unit objects
     //     */

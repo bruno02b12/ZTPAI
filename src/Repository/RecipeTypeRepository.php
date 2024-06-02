@@ -21,6 +21,14 @@ class RecipeTypeRepository extends ServiceEntityRepository
         parent::__construct($registry, RecipeType::class);
     }
 
+    public function findAllSortedByName()
+    {
+        return $this->createQueryBuilder('u')
+            ->orderBy('u.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return RecipeType[] Returns an array of RecipeType objects
     //     */

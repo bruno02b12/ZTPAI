@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\ShoppingList;
 use App\Entity\ShoppingListIngredient;
+use App\Entity\User;
 use App\Repository\FractionRepository;
 use App\Repository\IngredientRepository;
 use App\Repository\ShoppingListIngredientRepository;
@@ -11,7 +12,6 @@ use App\Repository\ShoppingListRepository;
 use App\Repository\UnitRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,7 +23,13 @@ class ListController extends AbstractController
     #[Route('/lists', name: 'app_lists')]
     public function lists(ShoppingListRepository $sl, ShoppingListIngredientRepository $sli): Response
     {
-        $userId = 1;
+        //CHANGE_USER
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return new Response('User not found', Response::HTTP_UNAUTHORIZED);
+        }
+        $userId = $user->getId();
+//        $userId = 1;
 
         $lists = $sl->findListsbyUserId($userId);
 
@@ -50,11 +56,19 @@ class ListController extends AbstractController
     {
         $data = json_decode($request->getContent(), true);
 
-        $userId = $data['id_user'] ?? null;
         $title = $data['title'] ?? null;
         $ingredientsData = json_decode($data['ingredients'], true);
 
-        $user = $userRepository->find($userId);
+//        $userId = $data['id_user'] ?? null;
+
+        //CHANGE_USER
+        $user = $this->getUser();
+        if (!$user instanceof User) {
+            return new Response('User not found', Response::HTTP_UNAUTHORIZED);
+        }
+        $userId = $user->getId();
+//        $user = $entityManager->getRepository(User::class)->find(1);
+//        $userId = $user->getId();
 
         $shoppingList = new ShoppingList();
         $shoppingList->setTitle($title);

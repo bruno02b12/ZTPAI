@@ -3,11 +3,9 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
 use App\Repository\UserRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 
@@ -17,7 +15,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     normalizationContext: ['groups' => ['user:read']],
     denormalizationContext: ['groups' => ['user:write']]
 )]
-class User implements UserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -45,6 +43,8 @@ class User implements UserInterface
     #[ORM\JoinColumn(name: "id_user_type", referencedColumnName: "id")]
     #[Groups(['user:read', 'user:write'])]
     private ?UserType $userType = null;
+
+    private array $roles = [];
 
     public function __construct(
         string $name,
@@ -127,8 +127,22 @@ class User implements UserInterface
 
     public function getRoles(): array
     {
-        // TODO: Implement getRoles() method.
+
+        $roles = ['ROLE_USER'];
+
+        if ($this->userType && $this->userType->getId() === 1) {
+            $roles[] = 'ROLE_ADMIN';
+        }
+
+        return array_unique($roles);
     }
+
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
+        return $this;
+    }
+
 
     public function eraseCredentials(): void
     {
@@ -137,6 +151,6 @@ class User implements UserInterface
 
     public function getUserIdentifier(): string
     {
-        // TODO: Implement getUserIdentifier() method.
+        return $this->email;
     }
 }

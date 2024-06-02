@@ -22,7 +22,7 @@ class RecipeIngredientRepository extends ServiceEntityRepository
     }
 
     public function findRecipeIngredients(int $id) {
-        $ingredients = $this->createQueryBuilder('ri')
+        return $this->createQueryBuilder('ri')
             ->select('ri.quantity, f.name as fraction, u.abbr as unit, i.name as ingredient, ri.note')
             ->innerJoin('ri.recipe', 'r')
             ->innerJoin('ri.fraction', 'f')
@@ -32,8 +32,6 @@ class RecipeIngredientRepository extends ServiceEntityRepository
             ->setParameter('id', $id)
             ->getQuery()
             ->getResult();
-
-        return $ingredients;
     }
 
     //    /**

@@ -25,12 +25,14 @@ class RecipeRepository extends ServiceEntityRepository
     public function findRecipeSummaries(): array
     {
         $results = $this->createQueryBuilder('r')
-            ->select('r.id, r.title, r.image')
+            ->select('r.id, r.title, r.image, r.addTime')
             ->getQuery()
             ->getArrayResult();
 
         return array_map(function ($row) {
-            return new RecipeSummary($row['id'], $row['title'], $row['image']);
+            $date = $row['addTime']->format('Y-m-d');
+            $summary = new RecipeSummary($row['id'], $row['title'], $row['image'], $date);
+            return $summary->toArray();
         }, $results);
     }
 

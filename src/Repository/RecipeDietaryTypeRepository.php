@@ -22,15 +22,13 @@ class RecipeDietaryTypeRepository extends ServiceEntityRepository
     }
 
     public function findRecipeDietaryTypes(int $id) {
-        $dietaryTypes = $this->createQueryBuilder('rdt')
+        return $this->createQueryBuilder('rdt')
             ->select('dt.name')
             ->innerJoin('rdt.dietaryType', 'dt')
             ->andWhere('rdt.recipe = :id')
             ->setParameter('id', $id)
             ->getQuery()
             ->getArrayResult();
-
-        return $dietaryTypes;
     }
 
     //    /**

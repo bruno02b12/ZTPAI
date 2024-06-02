@@ -21,6 +21,14 @@ class CuisineRepository extends ServiceEntityRepository
         parent::__construct($registry, Cuisine::class);
     }
 
+    public function findAllSortedByName()
+    {
+        return $this->createQueryBuilder('u')
+            ->orderBy('u.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
     //    /**
     //     * @return Cuisine[] Returns an array of Cuisine objects
     //     */
