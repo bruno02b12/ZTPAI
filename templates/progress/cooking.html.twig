@@ -44,6 +44,14 @@
             </div>
 
         </div>
+        <script>
+            if (!sessionStorage.getItem('pageReloaded')) {
+                sessionStorage.setItem('pageReloaded', 'true');
+                window.location.reload();
+            } else {
+                sessionStorage.removeItem('pageReloaded');
+            }
+        </script>
     {% endblock %}
 
 {% block javascripts %}
