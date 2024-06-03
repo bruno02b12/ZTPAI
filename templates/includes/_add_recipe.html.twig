@@ -6,7 +6,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="dynamicForm" action="{{ path('app_recipe_add') }}" method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; justify-content: center; align-items: center; justify-items: center">
-                <input type="hidden" name="id_user" value={{ app.user.id }}>
+                {% if app.user %}
+                    <input type="hidden" name="id_user" value="{{ app.user.id }}">
+                {% endif %}
                 <div class="modal-body" style="max-height: calc(100vh - 200px); overflow-y: auto;">
                     <label for="name" class="form-label" style="user-select: none">name</label>
                     <input type="text" id="name" name="name" class="form-control" required autocapitalize="sentences" minlength="10" maxlength="50" style="margin: auto; width: calc((10vw + 280px)); font-size: 1.2rem; text-align: center;">

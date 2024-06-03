@@ -66,7 +66,7 @@ class RecipeController extends AbstractController
         //CHANGE_USER
         $user = $this->getUser();
         if (!$user instanceof User) {
-            return new Response('User not found', Response::HTTP_UNAUTHORIZED);
+            return $this->render('security/login.html.twig');
         }
         $userId = $user->getId();
 //        $user = $entityManager->getRepository(User::class)->find(1);

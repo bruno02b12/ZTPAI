@@ -4,7 +4,7 @@
 
 {% block corner %}
     <a class="nav-item">
-        <img src="{{ asset('images/header/user.svg') }}" style="height: 65%; color: white; margin-right: 2.6vw; margin-left: -0.5vw;">
+        <img src="{{ asset('images/header/user.svg') }}" style="height: 65%; color: white; margin-right: 2.15vw; margin-left: -0.5vw;">
     </a>
     <a class="nav-item" href="/logout">
         <img src="{{ asset('images/header/logout.svg') }}" style="height: 65%; color: white; margin-right: 3.5vw;">
@@ -72,3 +72,12 @@
             {% endif %}
         </div>
     {% endblock %}
+
+{#{% block javascripts %}#}
+{#    <script>#}
+{#        function navigateToRecipe(element) {#}
+{#            const url = element.getAttribute('data-url');#}
+{#            window.location.href = url;#}
+{#        }#}
+{#    </script>#}
+{#{% endblock %}#}

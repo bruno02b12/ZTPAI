@@ -8,9 +8,11 @@
         </select>
     </div>
     <div class="col-1 d-flex me-3 justify-content-center align-items-center" style="width: 86px;">
+        {% if app.user %}
         <button class="w-100 h-100" type="button" data-bs-toggle="modal" data-bs-target="#staticBackdrop" style="border: solid 3px var(--bs-primary); height: 52px; width: 86px; border-radius: 18px;">
             <img src="{{ asset('images/main/tags/add-fill.png') }}" class="figure-img img-fluid rounded m-0" style="width: 40px;">
         </button>
+        {% endif %}
     </div>
 
     {% include 'includes/_add_recipe.html.twig' with {'cuisines': cuisines, 'dietaryTypes': dietaryTypes, 'recipeTypes': recipeTypes} %}
